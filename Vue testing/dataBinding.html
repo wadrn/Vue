@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<script type="text/javascript" src="vue.js"></script>
+	<style type="text/css">
+		.big{
+			font-size: 22px;
+		}
+		.red{
+			color: red;
+		}
+		.class-a{
+			text-decoration: underline;
+		}
+		.class-b{
+			background-color: green;
+		}
+	</style>
+</head>
+<body>
+	<div id="app">
+		<div class="static" v-bind:class="{'class-a':isA,'class-b':isB}">测试</div>
+		<div v-bind:class="className2">测试</div>
+		<button @click="isA=!isA">isA={{isA}}</button>
+		<button @click="isB=!isB">isB={{isB}}</button>
+	</div>
+	<script type="text/javascript">
+		var vm = new Vue({
+			el:'#app',
+			data:{
+				className1:'big',
+				className2:'red',
+				isA:true,
+				isB:true
+			}
+		});
+	</script>
+</body>
+</html>
