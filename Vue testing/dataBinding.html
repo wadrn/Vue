@@ -5,37 +5,205 @@
 	<title>Document</title>
 	<script type="text/javascript" src="vue.js"></script>
 	<style type="text/css">
-		.big{
-			font-size: 22px;
-		}
-		.red{
-			color: red;
-		}
-		.class-a{
-			text-decoration: underline;
-		}
-		.class-b{
-			background-color: green;
-		}
+		
 	</style>
 </head>
 <body>
 	<div id="app">
-		<div class="static" v-bind:class="{'class-a':isA,'class-b':isB}">测试</div>
-		<div v-bind:class="className2">测试</div>
-		<button @click="isA=!isA">isA={{isA}}</button>
-		<button @click="isB=!isB">isB={{isB}}</button>
+		<li v-for="n in evenNumbers">{{ n }}</li>
+		<button v-on:click="greet">greet</button>
+		<input type="text" v-model='message'>
+		<p>Message is :{{message}}</p>
+		<input type="checkbox" id="jack" value="Jack" v-model="checkedNames">
+		<label for="jack">Jack</label>
+		<input type="checkbox" id="john" value="John" v-model="checkedNames">
+		<label for="john">John</label>
+		<input type="checkbox" id="mike" value="Mike" v-model="checkedNames">
+		<label for="mike">Mike</label>
+		<br>
+		<span>Checked names :{{checkedNames}}</span>
+		<br>
+		<input type="radio" id="female" value="female" v-model="picked">
+		<label for="female">女</label>
+		<br>
+		<input type="radio" id="male" value="male" v-model="picked">
+		<label for="male">男</label>
+		<br>
+		<span>Picked :{{picked}} </span>
+		<br>
+		<select v-model="selected">
+			<option>A</option>
+			<option>B</option>
+			<option>C</option>
+		</select>
+		<span>Selected:{{selected}}</span>
+		<br>
+		<select v-model="selected">
+			<option v-for="option in options" v-bind:value="option.value">{{option.text}}
+			</option>
+		</select>
+		<span>Selected: {{selected}} </span>
+		<br>
+		<input type="checkbox" v-model="toggle" v-bind:true-value="a" v-bind:false-value="b">
+		<br>
+		<input type="number" v-model.number="age">
+		<br>
+		<my-component></my-component>
+		<my-component></my-component>
+		<my-component></my-component>
+		<br>
+		<div>
+			<input v-model="parentMsg">
+			<child v-bind:my-message="parentMsg"></child>
+			<br>
+			<comp some-prop='1'></comp>
+		</div>
+		<example></example>
+		<br>
+		<p>{{total}}</p>
+		<button-counter v-on:increment="incrementTotal"></button-counter>
+		<button-counter v-on:increment="incrementTotal"></button-counter>
+		<button-counter v-on:increment="incrementTotal"></button-counter>
+		<br>
+		<child-comp></child-comp>
+		<br>
+		<app-layout>
+			<h1 slot="header"></h1>
+			<p>A paragraph</p>
+			<p>B paragraph</p>
+			<p slot="footer">Footer</p>
+		</app-layout>
+		<br>
 	</div>
 	<script type="text/javascript">
+	Vue.component('my-component',{
+		template:"<button v-on:click='counter+=1'>{{counter}}</button>",
+		data:function(){
+			return {
+				counter:0
+			}
+		}
+	});
+	Vue.component('child-comp',{
+		template:'<div v-show="someChildProperty">Child</div>',
+		data:function(){
+			return{
+				someChildProperty:true
+			}
+		}
+	});
+	Vue.component('example',{
+		props:{
+			propA:Number,
+			propB:[String,Number],
+			propD:{
+				type:Number,
+				default:100
+			},
+			propE:{
+				type:Object,
+				default:function(){
+					return {message:'hello'}
+				}
+			},
+			propF:{
+				validator:function(value){
+					return value>10
+				}
+			}
+		},
+		template:'<span>{{propD}}</span>'
+	});
+	Vue.component('child',{
+		props:['myMessage'],
+		template:'<span>{{myMessage}}</span>'
+	});
+	Vue.component('comp',{
+		props:['someProp'],
+		template:'<span>{{someProp}}</span>'
+	});
+	Vue.component('button-counter',{
+		template:'<button v-on:click="increment">{{counter}}</button>',
+		data:function(){
+			return {
+				counter:0
+			}
+		},
+		methods:{
+			increment:function(){
+				this.counter+=1
+				this.$emit('increment')
+			}
+		},x
+	});
+	Vue.component('app-layout',{
+		template:'<div class="container"><header><slot name="header"</slot></header><main><slot></slot></main><footer><slot name="footer"></slot></footer></div>'
+	});
 		var vm = new Vue({
 			el:'#app',
 			data:{
-				className1:'big',
-				className2:'red',
-				isA:true,
-				isB:true
+				total:0,
+				toggle:"",
+				a:"A",
+				b:"B",
+				selected:"A",
+				options:[
+				{text:'One',value:'A'},
+				{text:'Two',value:'B'},
+				{text:'Three',value:'C'}
+				],
+				age:22,
+				counter:0,
+				object:{
+				firstName:'猪猪',
+				lastName:"孔雀",
+				Age:22
+				},
+				picked:" ",
+				checkedNames:[],	
+			  message:'猪猪侠',
+			  parentMsg:'didi',
+			  items:[
+			  {childMsg:'shunfeng'},
+			  {childMsg:'zhuanche'}
+			  ],
+			  numbers:[1,2,3,4,5,6,7,8]
+			},
+			computed:{
+				evenNumbers:function(){
+					return this.numbers.filter(function(number){
+						return number % 2 ===0;
+					})
+				},
+				reverseMsg:function(){
+					return this.message.split('').reverse().join('')
+				},
+				now:function(){
+					return Date.now()
+				},
+				fullName:{
+					get:function(){
+						return this.firstName +" "+this.lastName
+					},
+					set:function(newValue){
+						var names = newValue.split(' ');
+						this.firstName = names[0];
+						this.lastName = names[1];
+					}
+				}
+			},
+			methods:{
+				greet:function(event){
+					alert("Hello"+ this.message)
+					alert(event)
+				},
+				incrementTotal:function(){
+					this.total+=1
+				}
 			}
 		});
+		vm.fullName ='John Doe';
+		vm.items.unshift({childMsg:'bus'});
 	</script>
 </body>
 </html>
